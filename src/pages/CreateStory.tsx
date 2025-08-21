@@ -1,57 +1,47 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StoryAgeSelector } from "@/components/story-form/StoryAgeSelector";
-import { StoryThemeSelector } from "@/components/story-form/StoryThemeSelector";
 import { StoryMessageSelector } from "@/components/story-form/StoryMessageSelector";
+import { StoryDescriptionForm } from "@/components/story-form/StoryDescriptionForm";
+import { StoryWorldSelector } from "@/components/story-form/StoryWorldSelector";
 import { StoryStyleSelector } from "@/components/story-form/StoryStyleSelector";
-import { StoryCharacterForm } from "@/components/story-form/StoryCharacterForm";
+import { StoryFontSelector } from "@/components/story-form/StoryFontSelector";
+import { EnhancedCharacterForm } from "@/components/story-form/EnhancedCharacterForm";
+import { StorySummary } from "@/components/story-form/StorySummary";
 import { useToast } from "@/hooks/use-toast";
 
 interface StoryData {
   age: string;
   theme: string;
-  message: string;
+  description: string;
+  world: string;
+  customWorld: string;
   style: string;
-  
-  language: string;
+  font: string;
   characters: any[];
-  author: string;
-  preface: string;
-  userDetails: {
-    name: string;
-    email: string;
-    country: string;
-  };
+  email: string;
 }
 
 const CreateStory = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStep, setGenerationStep] = useState("");
   const [storyData, setStoryData] = useState<StoryData>({
     age: "",
     theme: "",
-    message: "",
+    description: "",
+    world: "",
+    customWorld: "",
     style: "",
-    
-    language: "Deutsch",
-    characters: [{ id: "main", name: "", type: "person" }],
-    author: "",
-    preface: "",
-    userDetails: {
-      name: "",
-      email: "",
-      country: "Deutschland",
-    },
+    font: "",
+    characters: [{ id: "1", name: "", type: "Mensch", age: "", gender: "neutral" }],
+    email: "",
   });
 
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -62,22 +52,31 @@ const CreateStory = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // Validate required fields
-    if (!storyData.age || !storyData.theme || !storyData.characters[0]?.name) {
-      toast({
-        title: "Fehler",
-        description: "Bitte fülle alle erforderlichen Felder aus.",
-        variant: "destructive",
-      });
-      return;
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    
+    const steps = [
+      "Erstelle Charaktere...",
+      "Entwickle die Handlung...", 
+      "Schreibe Kapitel...",
+      "Gestalte Illustrationen...",
+      "Füge alles zusammen...",
+      "Finalisiere dein Buch..."
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      setGenerationStep(steps[i]);
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
     toast({
-      title: "Kinderbuch wird erstellt!",
-      description: "Dein personalisiertes Kinderbuch wird jetzt generiert. Du erhältst eine E-Mail, sobald es fertig ist.",
+      title: "Kinderbuch erfolgreich erstellt!",
+      description: storyData.email 
+        ? "Dein personalisiertes Kinderbuch wurde erstellt und an deine E-Mail gesendet."
+        : "Dein personalisiertes Kinderbuch wurde erfolgreich erstellt!",
     });
 
+    setIsGenerating(false);
     console.log("Story data:", storyData);
   };
 
@@ -86,11 +85,13 @@ const CreateStory = () => {
       case 1:
         return storyData.age && storyData.theme;
       case 2:
-        return storyData.message && storyData.style;
+        return storyData.description.trim().length > 0 && (storyData.world || storyData.customWorld);
       case 3:
-        return storyData.characters[0]?.name;
+        return storyData.style && storyData.font;
       case 4:
-        return storyData.userDetails.name && storyData.userDetails.email;
+        return storyData.characters[0]?.name?.trim().length > 0;
+      case 5:
+        return storyData.characters[0]?.name?.trim().length > 0;
       default:
         return false;
     }
@@ -115,7 +116,7 @@ const CreateStory = () => {
                 Magisches Kinderbuch
               </h1>
               <div className="text-sm text-muted-foreground">
-                Schritt {currentStep} von 4
+                Schritt {currentStep} von 5
               </div>
             </div>
           </div>
@@ -137,8 +138,8 @@ const CreateStory = () => {
 
             {/* Modern Progress Indicator */}
             <div className="flex justify-center mb-16">
-              <div className="flex items-center space-x-8">
-                {[1, 2, 3, 4].map((step, index) => (
+              <div className="flex items-center space-x-4">
+                {[1, 2, 3, 4, 5].map((step, index) => (
                   <div key={step} className="flex items-center">
                     <div className={`relative flex items-center justify-center w-14 h-14 rounded-2xl text-sm font-bold transition-all duration-500 ${
                       step === currentStep
@@ -152,8 +153,8 @@ const CreateStory = () => {
                         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-accent opacity-20 animate-pulse"></div>
                       )}
                     </div>
-                    {index < 3 && (
-                      <div className={`w-16 h-1 mx-4 rounded-full transition-all duration-500 ${
+                    {index < 4 && (
+                      <div className={`w-12 h-1 mx-2 rounded-full transition-all duration-500 ${
                         step < currentStep ? "bg-gradient-to-r from-primary to-accent" : "bg-border/30"
                       }`}></div>
                     )}
@@ -166,184 +167,103 @@ const CreateStory = () => {
             <div className="glass-card rounded-3xl p-8 md:p-12" style={{boxShadow: 'var(--shadow-card)'}}>
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
-                  {currentStep === 1 && "Grundlagen deiner Geschichte"}
-                  {currentStep === 2 && "Stil & Botschaft"}
-                  {currentStep === 3 && "Charaktere erschaffen"}
-                  {currentStep === 4 && "Persönliche Details"}
+                  {currentStep === 1 && "Thema & Alter"}
+                  {currentStep === 2 && "Geschichte & Welt"}
+                  {currentStep === 3 && "Stil & Schrift"}
+                  {currentStep === 4 && "Charaktere"}
+                  {currentStep === 5 && "Übersicht & Erstellen"}
                 </h2>
                 <p className="text-muted-foreground">
-                  {currentStep === 1 && "Wähle das Alter und das Thema für deine magische Geschichte"}
-                  {currentStep === 2 && "Bestimme die zentrale Botschaft und den visuellen Stil"}
-                  {currentStep === 3 && "Erstelle einzigartige Charaktere für dein Abenteuer"}
-                  {currentStep === 4 && "Vervollständige dein Buch mit persönlichen Informationen"}
+                  {currentStep === 1 && "Wähle das zentrale Thema und die Altersgruppe für deine Geschichte"}
+                  {currentStep === 2 && "Beschreibe deine Geschichte und wähle den Schauplatz"}
+                  {currentStep === 3 && "Bestimme den visuellen Stil und die Schriftart"}
+                  {currentStep === 4 && "Erstelle einzigartige Charaktere für dein Abenteuer"}
+                  {currentStep === 5 && "Prüfe alles und erstelle dein magisches Kinderbuch"}
                 </p>
               </div>
               
               <div className="space-y-12">
-                {/* Step 1: Age and Theme */}
+                {/* Step 1: Theme and Age */}
                 {currentStep === 1 && (
                   <div className="space-y-16">
+                    <StoryMessageSelector
+                      selectedMessage={storyData.theme}
+                      onMessageSelect={(theme) => setStoryData({ ...storyData, theme })}
+                    />
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
                     <StoryAgeSelector
                       selectedAge={storyData.age}
                       onAgeSelect={(age) => setStoryData({ ...storyData, age })}
                     />
+                  </div>
+                )}
+
+                {/* Step 2: Description and World */}
+                {currentStep === 2 && (
+                  <div className="space-y-16">
+                    <StoryDescriptionForm
+                      description={storyData.description}
+                      onDescriptionChange={(description) => setStoryData({ ...storyData, description })}
+                    />
                     <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-                    <StoryThemeSelector
-                      selectedTheme={storyData.theme}
-                      onThemeSelect={(theme) => setStoryData({ ...storyData, theme })}
+                    <StoryWorldSelector
+                      selectedWorld={storyData.world}
+                      customWorld={storyData.customWorld}
+                      onWorldSelect={(world) => setStoryData({ ...storyData, world })}
+                      onCustomWorldChange={(customWorld) => setStoryData({ ...storyData, customWorld })}
                     />
                   </div>
                 )}
 
-                {/* Step 2: Message and Style */}
-                {currentStep === 2 && (
+                {/* Step 3: Style and Font */}
+                {currentStep === 3 && (
                   <div className="space-y-16">
-                    <StoryMessageSelector
-                      selectedMessage={storyData.message}
-                      onMessageSelect={(message) => setStoryData({ ...storyData, message })}
-                    />
-                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
                     <StoryStyleSelector
                       selectedStyle={storyData.style}
                       onStyleSelect={(style) => setStoryData({ ...storyData, style })}
                     />
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                    <StoryFontSelector
+                      selectedFont={storyData.font}
+                      onFontSelect={(font) => setStoryData({ ...storyData, font })}
+                    />
                   </div>
                 )}
 
-                {/* Step 3: Characters */}
-                {currentStep === 3 && (
-                  <StoryCharacterForm
+                {/* Step 4: Characters */}
+                {currentStep === 4 && (
+                  <EnhancedCharacterForm
                     characters={storyData.characters}
                     onCharactersChange={(characters) => setStoryData({ ...storyData, characters })}
                   />
                 )}
 
-                {/* Step 4: Author and User Details */}
-                {currentStep === 4 && (
-                  <div className="space-y-12">
-                    <div className="grid md:grid-cols-2 gap-12">
-                      {/* Left Column - Author Details */}
-                      <div className="space-y-8">
-                        <div>
-                          <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                              <span className="text-sm">✍️</span>
-                            </div>
-                            Persönliche Note
-                          </h3>
-                          <p className="text-muted-foreground mb-6 leading-relaxed">
-                            Verleihe deinem Buch eine einzigartige, persönliche Note durch deine eigenen Details.
-                          </p>
-                          <div className="space-y-6">
-                            <div>
-                              <Label htmlFor="author" className="text-base font-medium">Autor des Buchs</Label>
-                              <Input
-                                id="author"
-                                value={storyData.author}
-                                onChange={(e) => setStoryData({ ...storyData, author: e.target.value })}
-                                placeholder="z.B. Mama und Papa"
-                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="preface" className="text-base font-medium">Vorwort im Buch</Label>
-                              <Textarea
-                                id="preface"
-                                value={storyData.preface}
-                                onChange={(e) => setStoryData({ ...storyData, preface: e.target.value })}
-                                placeholder="Eine persönliche Widmung..."
-                                rows={4}
-                                className="mt-2 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 resize-none transition-all"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Column - User Details */}
-                      <div className="space-y-8">
-                        <div>
-                          <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                              <span className="text-sm">👤</span>
-                            </div>
-                            Deine Daten
-                          </h3>
-                          <p className="text-muted-foreground mb-6 leading-relaxed">
-                            Diese Informationen benötigen wir, um dir dein fertiges Buch zuzusenden.
-                          </p>
-                          <div className="space-y-6">
-                            <div>
-                              <Label htmlFor="user-name" className="text-base font-medium">Name *</Label>
-                              <Input
-                                id="user-name"
-                                value={storyData.userDetails.name}
-                                onChange={(e) => setStoryData({
-                                  ...storyData,
-                                  userDetails: { ...storyData.userDetails, name: e.target.value }
-                                })}
-                                placeholder="Dein Name"
-                                required
-                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="email" className="text-base font-medium">E-Mail *</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                value={storyData.userDetails.email}
-                                onChange={(e) => setStoryData({
-                                  ...storyData,
-                                  userDetails: { ...storyData.userDetails, email: e.target.value }
-                                })}
-                                placeholder="deine@email.de"
-                                required
-                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="country" className="text-base font-medium">Land</Label>
-                              <Select
-                                value={storyData.userDetails.country}
-                                onValueChange={(value) => setStoryData({
-                                  ...storyData,
-                                  userDetails: { ...storyData.userDetails, country: value }
-                                })}
-                              >
-                                <SelectTrigger className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Deutschland">Deutschland</SelectItem>
-                                  <SelectItem value="Österreich">Österreich</SelectItem>
-                                  <SelectItem value="Schweiz">Schweiz</SelectItem>
-                                  <SelectItem value="Niederlande">Niederlande</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                {/* Step 5: Summary and Generate */}
+                {currentStep === 5 && (
+                  <StorySummary
+                    storyData={storyData}
+                    onEmailChange={(email) => setStoryData({ ...storyData, email })}
+                    onGenerate={handleGenerate}
+                    isGenerating={isGenerating}
+                    generationStep={generationStep}
+                  />
                 )}
 
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between items-center pt-12 mt-12 border-t border-border/20">
-                <Button
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                  className="h-14 px-8 rounded-xl bg-muted/50 border-border/30 hover:bg-muted hover:border-border transition-all duration-300"
-                >
-                  <span className="mr-2">←</span>
-                  Zurück
-                </Button>
-                
-                {currentStep < 4 ? (
+              {currentStep < 5 && (
+                <div className="flex justify-between items-center pt-12 mt-12 border-t border-border/20">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrevious}
+                    disabled={currentStep === 1}
+                    className="h-14 px-8 rounded-xl bg-muted/50 border-border/30 hover:bg-muted hover:border-border transition-all duration-300"
+                  >
+                    <span className="mr-2">←</span>
+                    Zurück
+                  </Button>
+                  
                   <Button
                     onClick={handleNext}
                     disabled={!canProceed()}
@@ -352,17 +272,8 @@ const CreateStory = () => {
                     Nächster Schritt
                     <span className="ml-2">→</span>
                   </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!canProceed()}
-                    className="h-14 px-8 rounded-xl bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-primary-foreground font-medium transition-all duration-300 pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="mr-2">✨</span>
-                    Kinderbuch erstellen
-                  </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </main>

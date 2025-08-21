@@ -17,7 +17,7 @@ interface StoryData {
   theme: string;
   message: string;
   style: string;
-  font: string;
+  
   language: string;
   characters: any[];
   author: string;
@@ -37,7 +37,7 @@ const CreateStory = () => {
     theme: "",
     message: "",
     style: "",
-    font: "",
+    
     language: "Deutsch",
     characters: [{ id: "main", name: "", type: "person" }],
     author: "",
@@ -49,17 +49,9 @@ const CreateStory = () => {
     },
   });
 
-  const fontOptions = [
-    "Märchenbuch",
-    "Weicher Sand", 
-    "Blasenspaß",
-    "Süße Träume",
-    "Neon-Abenteuer",
-    "Fröhliche Locken"
-  ];
 
   const handleNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -96,10 +88,8 @@ const CreateStory = () => {
       case 2:
         return storyData.message && storyData.style;
       case 3:
-        return storyData.font && storyData.language;
-      case 4:
         return storyData.characters[0]?.name;
-      case 5:
+      case 4:
         return storyData.userDetails.name && storyData.userDetails.email;
       default:
         return false;
@@ -107,261 +97,276 @@ const CreateStory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold">Magisches Kinderbuch</h1>
-        </div>
-      </header>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl floating-animation"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl floating-animation" style={{animationDelay: '3s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"></div>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-4">
-              Erstelle ein personalisiertes Kinderbuch
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Wähle ein Geschichtsthema, füge Name und persönliche Details hinzu und erstelle ein einzigartiges eBook.
-              Anschließend kannst du die Geschichte auch als Hardcover-Buch bestellen – eine bleibende Erinnerung.
-            </p>
-          </div>
-
-          {/* Progress Steps */}
-          <div className="flex justify-center mb-8">
-            <div className="flex space-x-4">
-              {[1, 2, 3, 4, 5].map((step) => (
-                <div
-                  key={step}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step === currentStep
-                      ? "bg-primary text-primary-foreground"
-                      : step < currentStep
-                      ? "bg-secondary text-secondary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {step}
-                </div>
-              ))}
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="border-b border-border/20 backdrop-blur-sm">
+          <div className="container mx-auto px-6 py-6">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Magisches Kinderbuch
+              </h1>
+              <div className="text-sm text-muted-foreground">
+                Schritt {currentStep} von 4
+              </div>
             </div>
           </div>
+        </header>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-primary">
-                Stelle dein einzigartiges Kinderbuch zusammen
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Step 1: Age and Theme */}
-              {currentStep === 1 && (
-                <div className="space-y-8">
-                  <StoryAgeSelector
-                    selectedAge={storyData.age}
-                    onAgeSelect={(age) => setStoryData({ ...storyData, age })}
-                  />
-                  <StoryThemeSelector
-                    selectedTheme={storyData.theme}
-                    onThemeSelect={(theme) => setStoryData({ ...storyData, theme })}
-                  />
-                </div>
-              )}
+        {/* Main Content */}
+        <main className="container mx-auto px-6 py-12">
+          <div className="max-w-5xl mx-auto">
+            {/* Header Section */}
+            <div className="text-center mb-16">
+              <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
+                Erstelle dein magisches<br />Kinderbuch
+              </h1>
+              <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
+                Erschaffe eine einzigartige Geschichte mit personalisierten Charakteren und wunderschönen Illustrationen.
+                Dein Buch wird zu einem unvergesslichen Geschenk.
+              </p>
+            </div>
 
-              {/* Step 2: Message and Style */}
-              {currentStep === 2 && (
-                <div className="space-y-8">
-                  <StoryMessageSelector
-                    selectedMessage={storyData.message}
-                    onMessageSelect={(message) => setStoryData({ ...storyData, message })}
-                  />
-                  <StoryStyleSelector
-                    selectedStyle={storyData.style}
-                    onStyleSelect={(style) => setStoryData({ ...storyData, style })}
-                  />
-                </div>
-              )}
+            {/* Modern Progress Indicator */}
+            <div className="flex justify-center mb-16">
+              <div className="flex items-center space-x-8">
+                {[1, 2, 3, 4].map((step, index) => (
+                  <div key={step} className="flex items-center">
+                    <div className={`relative flex items-center justify-center w-14 h-14 rounded-2xl text-sm font-bold transition-all duration-500 ${
+                      step === currentStep
+                        ? "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-2xl pulse-glow scale-110"
+                        : step < currentStep
+                        ? "bg-gradient-to-br from-secondary to-muted text-foreground"
+                        : "bg-muted/50 text-muted-foreground border border-border/30"
+                    }`}>
+                      {step < currentStep ? "✓" : step}
+                      {step === currentStep && (
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-accent opacity-20 animate-pulse"></div>
+                      )}
+                    </div>
+                    {index < 3 && (
+                      <div className={`w-16 h-1 mx-4 rounded-full transition-all duration-500 ${
+                        step < currentStep ? "bg-gradient-to-r from-primary to-accent" : "bg-border/30"
+                      }`}></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-              {/* Step 3: Font and Language */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Wähle eine Schriftart</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {fontOptions.map((font) => (
-                        <Card
-                          key={font}
-                          className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                            storyData.font === font
-                              ? "ring-2 ring-primary bg-secondary"
-                              : "hover:bg-accent"
-                          }`}
-                          onClick={() => setStoryData({ ...storyData, font })}
-                        >
-                          <CardContent className="p-4 text-center">
-                            <span className="font-medium">{font}</span>
-                          </CardContent>
-                        </Card>
-                      ))}
+            {/* Modern Glass Card */}
+            <div className="glass-card rounded-3xl p-8 md:p-12" style={{boxShadow: 'var(--shadow-card)'}}>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-foreground mb-3">
+                  {currentStep === 1 && "Grundlagen deiner Geschichte"}
+                  {currentStep === 2 && "Stil & Botschaft"}
+                  {currentStep === 3 && "Charaktere erschaffen"}
+                  {currentStep === 4 && "Persönliche Details"}
+                </h2>
+                <p className="text-muted-foreground">
+                  {currentStep === 1 && "Wähle das Alter und das Thema für deine magische Geschichte"}
+                  {currentStep === 2 && "Bestimme die zentrale Botschaft und den visuellen Stil"}
+                  {currentStep === 3 && "Erstelle einzigartige Charaktere für dein Abenteuer"}
+                  {currentStep === 4 && "Vervollständige dein Buch mit persönlichen Informationen"}
+                </p>
+              </div>
+              
+              <div className="space-y-12">
+                {/* Step 1: Age and Theme */}
+                {currentStep === 1 && (
+                  <div className="space-y-16">
+                    <StoryAgeSelector
+                      selectedAge={storyData.age}
+                      onAgeSelect={(age) => setStoryData({ ...storyData, age })}
+                    />
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                    <StoryThemeSelector
+                      selectedTheme={storyData.theme}
+                      onThemeSelect={(theme) => setStoryData({ ...storyData, theme })}
+                    />
+                  </div>
+                )}
+
+                {/* Step 2: Message and Style */}
+                {currentStep === 2 && (
+                  <div className="space-y-16">
+                    <StoryMessageSelector
+                      selectedMessage={storyData.message}
+                      onMessageSelect={(message) => setStoryData({ ...storyData, message })}
+                    />
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                    <StoryStyleSelector
+                      selectedStyle={storyData.style}
+                      onStyleSelect={(style) => setStoryData({ ...storyData, style })}
+                    />
+                  </div>
+                )}
+
+                {/* Step 3: Characters */}
+                {currentStep === 3 && (
+                  <StoryCharacterForm
+                    characters={storyData.characters}
+                    onCharactersChange={(characters) => setStoryData({ ...storyData, characters })}
+                  />
+                )}
+
+                {/* Step 4: Author and User Details */}
+                {currentStep === 4 && (
+                  <div className="space-y-12">
+                    <div className="grid md:grid-cols-2 gap-12">
+                      {/* Left Column - Author Details */}
+                      <div className="space-y-8">
+                        <div>
+                          <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                              <span className="text-sm">✍️</span>
+                            </div>
+                            Persönliche Note
+                          </h3>
+                          <p className="text-muted-foreground mb-6 leading-relaxed">
+                            Verleihe deinem Buch eine einzigartige, persönliche Note durch deine eigenen Details.
+                          </p>
+                          <div className="space-y-6">
+                            <div>
+                              <Label htmlFor="author" className="text-base font-medium">Autor des Buchs</Label>
+                              <Input
+                                id="author"
+                                value={storyData.author}
+                                onChange={(e) => setStoryData({ ...storyData, author: e.target.value })}
+                                placeholder="z.B. Mama und Papa"
+                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="preface" className="text-base font-medium">Vorwort im Buch</Label>
+                              <Textarea
+                                id="preface"
+                                value={storyData.preface}
+                                onChange={(e) => setStoryData({ ...storyData, preface: e.target.value })}
+                                placeholder="Eine persönliche Widmung..."
+                                rows={4}
+                                className="mt-2 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 resize-none transition-all"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Column - User Details */}
+                      <div className="space-y-8">
+                        <div>
+                          <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
+                              <span className="text-sm">👤</span>
+                            </div>
+                            Deine Daten
+                          </h3>
+                          <p className="text-muted-foreground mb-6 leading-relaxed">
+                            Diese Informationen benötigen wir, um dir dein fertiges Buch zuzusenden.
+                          </p>
+                          <div className="space-y-6">
+                            <div>
+                              <Label htmlFor="user-name" className="text-base font-medium">Name *</Label>
+                              <Input
+                                id="user-name"
+                                value={storyData.userDetails.name}
+                                onChange={(e) => setStoryData({
+                                  ...storyData,
+                                  userDetails: { ...storyData.userDetails, name: e.target.value }
+                                })}
+                                placeholder="Dein Name"
+                                required
+                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="email" className="text-base font-medium">E-Mail *</Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={storyData.userDetails.email}
+                                onChange={(e) => setStoryData({
+                                  ...storyData,
+                                  userDetails: { ...storyData.userDetails, email: e.target.value }
+                                })}
+                                placeholder="deine@email.de"
+                                required
+                                className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="country" className="text-base font-medium">Land</Label>
+                              <Select
+                                value={storyData.userDetails.country}
+                                onValueChange={(value) => setStoryData({
+                                  ...storyData,
+                                  userDetails: { ...storyData.userDetails, country: value }
+                                })}
+                              >
+                                <SelectTrigger className="mt-2 h-12 rounded-xl bg-muted/50 border-border/30 focus:border-primary/50">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Deutschland">Deutschland</SelectItem>
+                                  <SelectItem value="Österreich">Österreich</SelectItem>
+                                  <SelectItem value="Schweiz">Schweiz</SelectItem>
+                                  <SelectItem value="Niederlande">Niederlande</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                )}
 
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Informationen zum Buch</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="language">In welcher Sprache soll das Buch geschrieben werden?</Label>
-                        <Select
-                          value={storyData.language}
-                          onValueChange={(value) => setStoryData({ ...storyData, language: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Deutsch">Deutsch</SelectItem>
-                            <SelectItem value="English">English</SelectItem>
-                            <SelectItem value="Français">Français</SelectItem>
-                            <SelectItem value="Español">Español</SelectItem>
-                            <SelectItem value="Nederlands">Nederlands</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Characters */}
-              {currentStep === 4 && (
-                <StoryCharacterForm
-                  characters={storyData.characters}
-                  onCharactersChange={(characters) => setStoryData({ ...storyData, characters })}
-                />
-              )}
-
-              {/* Step 5: Author and User Details */}
-              {currentStep === 5 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Deine persönlichen Details</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Verleihe dem Buch eine einzigartige, persönliche Note, indem du den Macher des Buchs angibst.
-                    </p>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="author">Autor des Buchs</Label>
-                        <Input
-                          id="author"
-                          value={storyData.author}
-                          onChange={(e) => setStoryData({ ...storyData, author: e.target.value })}
-                          placeholder="z.B. Mama und Papa"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="preface">Vorwort im Buch</Label>
-                        <Textarea
-                          id="preface"
-                          value={storyData.preface}
-                          onChange={(e) => setStoryData({ ...storyData, preface: e.target.value })}
-                          placeholder="Eine persönliche Widmung..."
-                          rows={4}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Deine Zugangsdaten</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Verwende diese Daten zum Einloggen und bleibe auf dem Laufenden, wann dein personalisiertes Buch fertig ist.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="user-name">Name *</Label>
-                        <Input
-                          id="user-name"
-                          value={storyData.userDetails.name}
-                          onChange={(e) => setStoryData({
-                            ...storyData,
-                            userDetails: { ...storyData.userDetails, name: e.target.value }
-                          })}
-                          placeholder="Dein Name"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="country">Land</Label>
-                        <Select
-                          value={storyData.userDetails.country}
-                          onValueChange={(value) => setStoryData({
-                            ...storyData,
-                            userDetails: { ...storyData.userDetails, country: value }
-                          })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Deutschland">Deutschland</SelectItem>
-                            <SelectItem value="Österreich">Österreich</SelectItem>
-                            <SelectItem value="Schweiz">Schweiz</SelectItem>
-                            <SelectItem value="Niederlande">Niederlande</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="md:col-span-2">
-                        <Label htmlFor="email">E-Mail *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={storyData.userDetails.email}
-                          onChange={(e) => setStoryData({
-                            ...storyData,
-                            userDetails: { ...storyData.userDetails, email: e.target.value }
-                          })}
-                          placeholder="deine@email.de"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 border-t">
+              <div className="flex justify-between items-center pt-12 mt-12 border-t border-border/20">
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
+                  className="h-14 px-8 rounded-xl bg-muted/50 border-border/30 hover:bg-muted hover:border-border transition-all duration-300"
                 >
+                  <span className="mr-2">←</span>
                   Zurück
                 </Button>
                 
-                {currentStep < 5 ? (
+                {currentStep < 4 ? (
                   <Button
                     onClick={handleNext}
                     disabled={!canProceed()}
-                    className="bg-primary hover:bg-primary/90"
+                    className="h-14 px-8 rounded-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-medium transition-all duration-300 pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Nächster Schritt
+                    <span className="ml-2">→</span>
                   </Button>
                 ) : (
                   <Button
                     onClick={handleSubmit}
                     disabled={!canProceed()}
-                    className="bg-primary hover:bg-primary/90"
+                    className="h-14 px-8 rounded-xl bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-primary-foreground font-medium transition-all duration-300 pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
+                    <span className="mr-2">✨</span>
                     Kinderbuch erstellen
                   </Button>
                 )}
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
